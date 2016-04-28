@@ -1,27 +1,32 @@
-var pushes = 0;
+var slides = 0;
 var colors = {
-	2: 		"yellow",
+	2: 		"beige",
 	4: 		"yellow",
-	8: 		"orange",
-  16: 	"red",
-  32: 	"violet",
-  64: 	"indigo",
-  128: 	"blue",
-  256: 	"green"
+	8: 		"gold",
+  16: 	"orange",
+  32: 	"red",
+  64: 	"darkred",
+  128: 	"indigo",
+  256: 	"purple",
+	512:	"violet",
+	1024:	"skyblue",
+	2048:	"lightgreen",
+	4096:	"green",
+	8192:	"darkgreen",
 };
 
 var Game = function () {
 	//Game board
 	this.state = 	[[null,null,null,null],
-								[null,null,null,null],
-								[null,null,null,null],
-								[null,null,null,null]];
+								 [null,null,null,null],
+								 [null,null,null,null],
+								 [null,null,null,null]];
 
 	//Currently empty cells (all at start)
 	this.empties = 	['0,0','0,1','0,2','0,3',
-									'1,0','1,1','1,2','1,3',
-									'2,0','2,1','2,2','2,3',
-									'3,0','3,1','3,2','3,3'];
+									 '1,0','1,1','1,2','1,3',
+									 '2,0','2,1','2,2','2,3',
+									 '3,0','3,1','3,2','3,3'];
 };
 
 //Set up board
@@ -33,7 +38,7 @@ Game.prototype.init = function () {
 //Add new Cell to random position
 Game.prototype.addCell = function () {
 	if(this.empties.length){
-		//remove random cell from empties list
+		//remove a random cell from empties list
 		var position = sample.call(this.empties);
 
 		//make a new cell there on the board
@@ -48,24 +53,15 @@ function sample(arr){
 	return arr.splice(Math.floor(Math.random() * arr.length), 1)[0];
 }
 
+//Handes the players move
+Game.prototype.move = function(direction){
+	//set up directional information based on which way player desires to move
+	var moveOpt = direction === "right" || direction === "down" ?
+		{ y:3, x:3, end: 0, dir: 1} :
+		{ y:0, x:0, end: 3, dir: -1};
 
-Game.prototype.push = function(way) {
-	//Add to push counter (statistics)
-	pushes++;
-
-	//set up directional information based on which way player pushed
-	var pos, end, direction, focus;
-	if( way === "right" || way === "down" ) {
-		pos = {y:3, x:3};
-		end = 0;
-		direction = 1;
-	} else {
-		pos = {y:0, x:0};
-		end = 3;
-		direction = -1;
-	}
-	focus = way === "right" || way === "left" ? "y" : "x";
-	// way === 'right' || way === 'left'
+	moveOpt.focus = direction === "right" || direction === "left" ? "y" : "x";
+	// dir === 'right' || dir === 'left'
 	//  =========
 	//  | | | | |
 	//  ---------
@@ -76,64 +72,89 @@ Game.prototype.push = function(way) {
 	//  | | | | |
 	//  =========
 
+	this.slide(moveOpt);
+};
+
+Game.prototype.slide = function(x,y,dir,focus,prevEmpties){
+	var newPos = focus === "x" ?
+		{x: x, y: y + (dir * prevEmpties)} :
+		{x: x + (dir * prevEmpties), y: y};
+
+	this.state[newPos.y][newPos.x] = this.state[y][x];
+	this.state[y][x] = null;
+
+	//Swap positions in empty list
+	this.empties[this.empties.indexOf(`${newPos.y},${newPos.x}`)] = `${y},${x}`;
+
+	//return new position
+	return newPos;
+};
+
+Game.prototype.mergeCheck = function(cell, pos, focus, dir){
+	var neighbor = focus === "x" ?
+		{x: pos.x, y: pos.y + dir} :
+		{x: pos.x + dir, y: pos.y};
+
+	//Check if the value is the same as it's neighbor's
+	if(this.state[neighbor.y] && this.state[neighbor.y][neighbor.x] &&
+		cell.value === this.state[neighbor.y][neighbor.x].value){
+			this.state[pos.y][pos.x] = null;
+			this.state[neighbor.y][neighbor.x].merge();
+
+			//Add current to empties list and focus empties count
+			this.empties.slide(`${pos.y},${pos.x}`);
+
+			return true;
+		}
+	else return false;
+};
+
+//Performs the board movement with options from move.
+Game.prototype.slide = function(move) {
+	//Add to slide counter (statistics)
+	slides++;
+
 	//Set up variables for looping through game state
 	var focusEmpties = {0:0,1:0,2:0,3:0},
-			currentCell, newPos, slides = 0;
+			slides = 0,
+			currentCell, pos;
 
-	//Loop through game state the opposite direction of push
-	while(pos.y != end - direction) {
-		while(pos.x != end - direction) {
-			newPos = null;
-			currentCell = this.state[pos.y][pos.x];
+	//Loop through game state the opposite direction of slide
+	while(move.y != move.end - move.dir) {
+		while(move.x != move.end - move.dir) {
+			pos = null;
+			currentCell = this.state[move.y][move.x];
 
 			//Check if cell is empty (for future sliding)
-			if (currentCell === null) focusEmpties[pos[focus]]++;
+			if (currentCell === null) focusEmpties[move[move.focus]]++;
 			else {
 
 				//Slide cell if there were preceeding focusEmpties
-				if(focusEmpties[pos[focus]]){
+				if(focusEmpties[move[move.focus]]){
 					slides++;
-					newPos = focus === "x" ?
-						{x: pos.x, y: pos.y + (direction * focusEmpties[pos[focus]])} :
-						{x: pos.x + (direction * focusEmpties[pos[focus]]), y: pos.y};
-
-					this.state[newPos.y][newPos.x] = currentCell;
-					this.state[pos.y][pos.x] = null;
-
-					//Swap positions in empty list
-					this.empties[this.empties.indexOf(`${newPos.y},${newPos.x}`)] = `${pos.y},${pos.x}`;
+					pos = this.slide(move.x,move.y,move.dir,move.focus,focusEmpties[move[move.focus]]);
 				}
 
 				//Get the current position of target cell
 				//it may or may not have slid
-				newPos = newPos || pos;
-				var neighborPos = focus === "x" ?
-					{x: newPos.x, y: newPos.y + direction} :
-					{x: newPos.x + direction, y: newPos.y};
-				console.log("current:", newPos, "neighbor:", neighborPos);
+				pos = pos || {y: move.y, x: move.x};
 
-				//Check if the value is the same as it's neighbor's
-				if(this.state[neighborPos.y] && this.state[neighborPos.y][neighborPos.x] &&
-					currentCell.value === this.state[neighborPos.y][neighborPos.x].value){
-						slides++;
-						this.state[newPos.y][newPos.x] = null;
-						this.state[neighborPos.y][neighborPos.x].merge();
-
-						//Add current to empties list and focus empties count
-						this.empties.push(`${newPos.y},${newPos.x}`);
-						focusEmpties[pos[focus]]++;
-					}
+				if(this.mergeCheck(currentCell, pos, move.focus, move.dir)){
+					slides++;
+					focusEmpties[move[move.focus]]++;
+				}
 			}
-			pos.x -= direction;//next cell in opposite direction of push way
+			move.x -= move.dir;//next cell in opposite direction of slide way
 		}
-		pos.x = Math.abs(pos.x - 3 + direction); //reset x for next iteration
-		pos.y -= direction; //new row in opposite direction of push way
+		move.x = Math.abs(move.x - 3 + move.dir); //reset x for next iteration
+		move.y -= move.dir; //new row in opposite direction of slide way
 	}
 
 	//After move is done, add a new Cell if there was a slide;
+	//If none, remove that slide from the count
 	if(slides) this.addCell();
+	else slides--;
 };
-
 
 var Cell = function (value) {
 	value = value || Math.random() < 0.85 ? 2 : 4;
