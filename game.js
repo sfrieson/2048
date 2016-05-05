@@ -27,12 +27,13 @@ var Game = function () {
 									 '1,0','1,1','1,2','1,3',
 									 '2,0','2,1','2,2','2,3',
 									 '3,0','3,1','3,2','3,3'];
+
+	this.moves = 0;
 };
 
 //Set up board
-Game.prototype.init = function () {
-	this.addCell();
-	this.addCell();
+Game.prototype.startingCells = function (num) {
+	while(num--) this.addCell();
 };
 
 //Add new Cell to random position
@@ -42,7 +43,7 @@ Game.prototype.addCell = function () {
 		var position = sample.call(this.empties);
 
 		//make a new cell there on the board
-		this.state[position.charAt(0)][position.charAt(2)] = new Cell();
+		this.state[position.charAt(0)][position.charAt(2)] = new Cell(null, this.moves);
 	}
 	else console.log("Game Over"); //TODO: Game Over???
 };
@@ -55,6 +56,7 @@ function sample(arr){
 
 //Handes the players move
 Game.prototype.move = function(direction){
+	this.moves++;
 	//set up directional information based on which way player desires to move
 	var moveOpt = direction === "right" || direction === "down" ?
 		{ y:3, x:3, end: 0, dir: 1} :
@@ -72,7 +74,7 @@ Game.prototype.move = function(direction){
 	//  | | | | |
 	//  =========
 
-	this.slide(moveOpt);
+	this.slideCheck(moveOpt);
 };
 
 Game.prototype.slide = function(x,y,dir,focus,prevEmpties){
@@ -97,20 +99,21 @@ Game.prototype.mergeCheck = function(cell, pos, focus, dir){
 
 	//Check if the value is the same as it's neighbor's
 	if(this.state[neighbor.y] && this.state[neighbor.y][neighbor.x] &&
-		cell.value === this.state[neighbor.y][neighbor.x].value){
+		cell.value === this.state[neighbor.y][neighbor.x].value &&
+		this.moves !==this.state[neighbor.y][neighbor.x].creation){
 			this.state[pos.y][pos.x] = null;
-			this.state[neighbor.y][neighbor.x].merge();
+			this.state[neighbor.y][neighbor.x].merge(this.moves);
 
 			//Add current to empties list and focus empties count
-			this.empties.slide(`${pos.y},${pos.x}`);
+			this.empties.push(`${pos.y},${pos.x}`);
 
 			return true;
 		}
 	else return false;
 };
 
-//Performs the board movement with options from move.
-Game.prototype.slide = function(move) {
+//Finds the board movement with options from move.
+Game.prototype.slideCheck = function(move) {
 	//Add to slide counter (statistics)
 	slides++;
 
@@ -156,15 +159,37 @@ Game.prototype.slide = function(move) {
 	else slides--;
 };
 
-var Cell = function (value) {
-	value = value || Math.random() < 0.85 ? 2 : 4;
+var Cell = function (value, moves) {
+	value = value || Math.random() < 0.9 ? 2 : 4;
 	this.value = value;
 	this.color = colors[this.value];
+	this.creation = moves;
 };
 
-Cell.prototype.merge = function() {
+Cell.prototype.merge = function(moves) {
 	this.value *= 2;
 	this.color = colors[this.value];
+	this.creation = moves;
 };
 
 //rethink empties data structure
+
+var r = function() {
+	game.move("right");
+	return game.state;
+};
+
+var l = function() {
+	game.move("left");
+	return game.state;
+};
+
+var u = function() {
+	game.move("up");
+	return game.state;
+};
+
+var d = function() {
+	game.move("down");
+	return game.state;
+};
