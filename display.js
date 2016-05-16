@@ -16,11 +16,12 @@ var colors = {
 var display = {};
 $(function(){
   //init
-  var game = new Game(5);
-  game.startingCells(2);
-  game.display = $('<div>').attr('id', 'game').css({width: 110 * game.square, height: 110 * game.square});
+	var square = 4,
+			startingCells = 2,
+  		game = new Game(square,startingCells);
+  game.display = $('<div>').attr('id', 'game').css({width: 110 * square, height: 110 * square});
   $('body').append(game.display);
-  game.createDisplay(game.square);
+  game.createDisplay();
 
 
   //key press events
@@ -33,8 +34,8 @@ $(function(){
 						39: "right",
 						40: "down"
 					};
-      game.move(direction[e.keyCode]);
-      game.updateDisplay(oldState, game.square);
+      game.move(directions[e.keyCode]);
+      game.updateDisplay(oldState);
     }
   });
 });
@@ -42,47 +43,42 @@ $(function(){
 
 Game.prototype.createDisplay = function(len) {
   display.board = $('<div>').attr('id','board');
-  for (var y = 0; y < len; y++){
-    for (var x = 0; x < len; x ++){
-      var cell = $('<div>').addClass('cell');
-      var stateCell = this.state[y][x];
-      if (stateCell){
-        cell
-        .html(
-          $('<div>').addClass('number').text(Math.pow(2,stateCell.value))
-        )
-        .css('background-color', colors[stateCell.value]);
+  this.state.each(function(stateCell){
+		var cell = $('<div>').addClass('cell');
+		if (stateCell.tile){
+			cell
+			.html(
+				$('<div>').addClass('number').text(Math.pow(2,stateCell.tile.value))
+			)
+			.css('background-color', colors[stateCell.tile.value]);
 
-        stateCell.display = cell;
-      }
-
-      display.board.append( cell );
-    }
-  }
+			stateCell.display = cell;
+		}
+		display.board.append( cell );
+	});
   this.display.html(display.board);
 };
 
 
-Game.prototype.updateDisplay = function(old, len) {
+Game.prototype.updateDisplay = function(old) {
   var difference = diff(old, this.state, {fixedSizeArr:true});
   console.log(difference);
-  for (var y = 0; y < len; y++){
-    for (var x = 0; x < len; x ++){
-      var cell = $('<div>').addClass('cell');
-      var stateCell = this.state[y][x];
-      if (stateCell){
-        cell
-        .html(
-          $('<div>').addClass('number').text(Math.pow(2,stateCell.value))
-        )
-        .css('background-color', colors[stateCell.value]);
+	display.board = $('<div>').attr('id','board');
+  this.state.each(function(stateCell){
+		var cell = $('<div>').addClass('cell');
 
-        stateCell.display = cell;
-      }
+		if (stateCell.tile){
+			cell
+			.html(
+				$('<div>').addClass('number').text(Math.pow(2,stateCell.tile.value))
+			)
+			.css('background-color', colors[stateCell.tile.value]);
 
-      display.board.append( cell );
-    }
-  }
+			stateCell.display = cell;
+		}
+
+		display.board.append( cell );
+	});
   this.display.html(display.board);
 };
 
