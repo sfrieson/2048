@@ -86,7 +86,7 @@ Game.prototype.slideCheck = function(move) {
 			cell.tile.prevPos = {y:cell.y, x:cell.x};
 
 			//Slide cell if there were preceeding focusEmpties
-			if(focusEmpties[move[move.focus]]){
+			if(empties[move.focusIndex]){
 				var newPos = this.slide(cell, cell.tile, move.dir, move.focus, empties[move.focusIndex]);
 				cell = state[newPos.y][newPos.x];
 				slid = true;
