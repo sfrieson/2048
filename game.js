@@ -33,10 +33,10 @@ Game.prototype.addTile = function () {
 	if(this.getEmpties()){
 		//remove a random cell from empties list
 		var cell = sample.call(this.empties);
-		// console.log(position);
+
 		//make a new tile there on the board
 		var tile = new Tile(this.moves, cell);
-		// console.log(this.state, tile);
+
 		cell.tile = tile;
 		this.tiles.push(tile);
 	}
@@ -58,11 +58,12 @@ Game.prototype.attemptMove = function(direction, cb){
 	//  2 [ ][ ][4][4] <-- ...focus is a row (y=2)
 	//  3 [ ][ ][ ][ ]
 
-	if(this.slideCheck(moveOpt)){
-		this.moves++;
-		return true;
+	this.moves++;
+	if(this.slideCheck(moveOpt)) return true;
+	else {
+		this.moves--;
+		return false;
 	}
-	else return false;
 };
 
 //Finds the board movement with options from move.
@@ -99,7 +100,6 @@ Game.prototype.slideCheck = function(move) {
 			}
 		}
 	}.bind(this),{increment: -move.dir}); //traverse options
-
 	//After move is done, add a new Tile if there was a slide
 	if(slid) this.addTile();
 	return slid;
@@ -109,7 +109,6 @@ Game.prototype.slide = function(cell,tile,dir,focus,prevEmpties){
 	var slidingAxis = focus === "x" ? "y" : "x";
 	//move tile's position attribute
 	tile[slidingAxis] += dir * prevEmpties;
-	// console.log(focus, dir, prevEmpties, "\n", oldPos, {y:tile.y,x:tile.x});
 
 	//new position
 	this.state[tile.y][tile.x].tile = tile;

@@ -92,6 +92,7 @@ Game.prototype.updateTile = function(tile) {
 				left: tile.x * 110,
 				backgroundColor: colors[tile.value]
 			};
+			console.log(id + ":", tile);
 
 	if(tile.display) tile.display.removeClass("new merged");
 	//If tile is new or merged on this move
