@@ -44,8 +44,8 @@ Game.prototype.addTile = function () {
 };
 
 //Handles the players move
-Game.prototype.move = function(direction, cb){
-	this.moves++;
+Game.prototype.attemptMove = function(direction, cb){
+
 
 	//set up directional information based on which way player desires to move
 	var moveOpt = direction === "right" || direction === "down" ? {dir: 1} : { dir: -1};
@@ -58,58 +58,51 @@ Game.prototype.move = function(direction, cb){
 	//  2 [ ][ ][4][4] <-- ...focus is a row (y=2)
 	//  3 [ ][ ][ ][ ]
 
-	return this.slideCheck(moveOpt);
+	if(this.slideCheck(moveOpt)){
+		this.moves++;
+		return true;
+	}
+	else return false;
 };
 
 //Finds the board movement with options from move.
 Game.prototype.slideCheck = function(move) {
 	//Set up variables for looping through game state
-	var slides = 0,
-			focusEmpties = {};
+	var slid = false,
+			empties = [];
 
-	//A count for empty cells in each row in the focus direction
-	for (var i = 0; i < this.square; i++) focusEmpties[i] = 0; //TODO: remove this somehow
+	//empties default at 0;
+	for(var i = 0; i < this.state.length; i++) empties[i] = 0;
 
 	//Loop through game state the opposite direction of slide
 	this.state.traverse(function(cell, y, x, state){
-		//TODO: remove these somehow
-		move.x = x;
-		move.y = y;
+		//Always have the value of the index of the focus axis for the empties
+		move.focusIndex = move.focus === "x" ? x : y;
+
 		//Check if cell is empty (for future sliding)
-		// console.log("x: " + x + " y: " + y);
-		// console.log("move:", move);
-		if (!cell.tile) focusEmpties[move[move.focus]]++;
+		if (!cell.tile) empties[move.focusIndex]++;
 		else {
 			//record old position for animation
 			cell.tile.prevPos = {y:cell.y, x:cell.x};
 
-			// console.log("focusEmpties:", focusEmpties);
-			// console.log("focusEmpties[move[move.focus]]:", focusEmpties[move[move.focus]]);
 			//Slide cell if there were preceeding focusEmpties
 			if(focusEmpties[move[move.focus]]){
-				var newPos = this.slide(cell, cell.tile, move.dir, move.focus, focusEmpties[move[move.focus]]);
+				var newPos = this.slide(cell, cell.tile, move.dir, move.focus, empties[move.focusIndex]);
 				cell = state[newPos.y][newPos.x];
-				slides++;
+				slid = true;
 			}
-			// console.log("cell after slide:",cell);
+
+			//if there's a merge, add one to the empties list.
 			if(this.mergeCheck(cell.tile, move.focus, move.dir)){
-				//if there was a merge, add one to the empties list.
-				focusEmpties[move[move.focus]]++;
-				slides++;
+				empties[move.focusIndex]++;
+				slid = true;
 			}
 		}
-	}.bind(this),{increment: -move.dir});
+	}.bind(this),{increment: -move.dir}); //traverse options
 
 	//After move is done, add a new Tile if there was a slide
-	if(slides) {
-		this.addTile();
-		return true;
-	}
-	//If none, remove that slide from the count
-	else {
-		this.moves--;
-		return false;
-	}
+	if(slid) this.addTile();
+	return slid;
 };
 
 Game.prototype.slide = function(cell,tile,dir,focus,prevEmpties){
@@ -202,27 +195,6 @@ Tile.prototype.remove = function(moves, direction) {
 	this.value = -1;
 	this.updated = moves;
 	// this.direction = direction;
-};
-
-
-var r = function() {
-	game.move("right");
-	game.status();
-};
-
-var l = function() {
-	game.move("left");
-	game.status();
-};
-
-var u = function() {
-	game.move("up");
-	game.status();
-};
-
-var d = function() {
-	game.move("down");
-	game.status();
 };
 
 //Array sample method

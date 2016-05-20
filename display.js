@@ -65,7 +65,7 @@ $(function(){
 				39: "right",
 				40: "down"
 			};
-      if(game.move(directions[e.keyCode])) game.updateDisplay();
+      if(game.attemptMove(directions[e.keyCode])) game.updateDisplay();
     }
   });
 });
