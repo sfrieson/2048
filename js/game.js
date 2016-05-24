@@ -3,7 +3,7 @@ var Game = function (sq, starters) {
 	//length and width of board matrix
 	this.empties = [];
 	this.removed = [];
-	this.score = 0;
+	this.currentScore = 0;
 
 	//Game board
 	this.state = 	matrix(sq);
@@ -20,6 +20,7 @@ var Game = function (sq, starters) {
 
 	events.on("after slides", this.getEmpties, this);
 	events.on("empties found", this.addTile, this);
+	events.on("merge", this.score, this);
 };
 
 //Find all empty tiles
@@ -35,6 +36,10 @@ Game.prototype.getEmpties = function() {
 
 };
 
+Game.prototype.score = function(scoringTile) {
+	this.currentScore += scoringTile.value;
+	events.emit("score");
+}
 //Add new Tile to random position
 Game.prototype.addTile = function () {
 	//remove a random cell from empties list
