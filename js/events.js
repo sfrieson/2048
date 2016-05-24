@@ -1,23 +1,35 @@
-var EventLoop = function(){
+var EventListener = function(){
 	this.queue = new Queue();
-	this.listeners = {};
+	this.events = {};
 };
 
-EventLoop.prototype.callQueue = function(){
+EventListener.prototype.callQueue = function(){
   while (!this.queue.isEmpty()) this.queue.dequeue()();
 };
 
-EventLoop.prototype.addListener = function(emitter, cb){
-  this.listeners[emitter] = this.listeners[emitter] || [];
-  this.listeners[emitter].push(cb);
+EventListener.prototype.on = function(event, handler, context){
+  this.events[event] = this.events[event] || [];
+  context = context || null;
+  this.events[event].push({fn:handler, context:context});
   this.callQueue();
 };
 
-EventLoop.prototype.addToCallQueue = function(listenerArr){
-	listenerArr.forEach(function(cb){this.queue.enqueue(cb);}.bind(this));
+EventListener.prototype.addToCallQueue = function(listenerArr, emitterArgs){
+	listenerArr.forEach(function(handler){
+    this.queue.enqueue(function(){ handler.fn.apply(handler.context, emitterArgs);});
+  }.bind(this));
 };
 
-EventLoop.prototype.emit = function(emitter){
-  this.addToCallQueue(this.listeners[emitter]);
+EventListener.prototype.emit = function(event, args){
+  if(this.events[event]) this.addToCallQueue(this.events[event]);
+  console.log("Event:", event);
   this.callQueue();
 };
+
+var events = new EventListener();
+
+$(function(){
+  //Game event listeners
+
+
+});

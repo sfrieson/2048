@@ -57,19 +57,23 @@ $(function(){
 	game.display.append(display.tiles);
   game.createDisplay();
 
-  //key press events
+  //Event listening
   $(document).on('keydown', function(e){
-    if(e.keyCode >= 37 && e.keyCode <= 40) {
-
-			var directions = {
-				37: "left",
-				38: "up",
-				39: "right",
-				40: "down"
-			};
-      if(game.attemptMove(directions[e.keyCode])) game.updateDisplay();
-    }
+		var directions = {
+			37: "left",
+			38: "up",
+			39: "right",
+			40: "down",
+			65: "left",
+			87: "up",
+			68: "right",
+			83: "down"
+		};
+    if(directions[e.keyCode]) game.attemptMove(directions[e.keyCode]);
   });
+
+	// events.on("after move", game.status, game);
+	events.on("after move", game.updateDisplay, game);
 });
 
 
@@ -126,6 +130,7 @@ Game.prototype.updateTile = function(tile) {
 	}
 	//tile slid or stayed still
 	else {
+		// console.log(tile)
 		tile.display
 		.removeAttr('id')
 		.html($number);
@@ -146,9 +151,11 @@ Game.prototype.removeTile = function(tile){
 
 
 Game.prototype.updateDisplay = function() {
+
 	this.removeOld();
 	this.tiles.forEach(function(tile){
 		//If there is a tile, update that cell
+
 		this.updateTile(tile);
 	}.bind(this));
 };
