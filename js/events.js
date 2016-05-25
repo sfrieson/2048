@@ -21,15 +21,9 @@ EventListener.prototype.addToCallQueue = function(listenerArr, emitterArgs){
 };
 
 EventListener.prototype.emit = function(event, args){
-  console.log("Event:", event);
+  // console.log("Event:", event);
   if(this.events[event]) this.addToCallQueue(this.events[event], args);
   this.callQueue();
 };
 
 var events = new EventListener();
-
-$(function(){
-  //Game event listeners
-
-
-});

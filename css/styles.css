@@ -1,13 +1,24 @@
 body {
   /*margin: 0;*/
+  text-align: center;
+  font-family: sans-serif;
 }
 #game {
   position: relative;
+  margin: 0 auto;
 }
 #board {
   position: absolute;
   top: 0;
   left: 0;
+}
+h1{
+  font-size: 3em;
+}
+.scoreboard {
+  text-align: center;
+  font-size: 2em;
+
 }
 @keyframes grow {
 /*   animation: grow 0.2s linear; */
