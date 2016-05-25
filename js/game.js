@@ -91,6 +91,7 @@ Game.prototype.slideCheck = function(move) {
 		else {
 			//record old position for animation
 			cell.tile.prevPos = {y:cell.y, x:cell.x};
+			cell.tile.status = null;
 
 			//Slide cell if there were preceeding focusEmpties
 			if(empties[move.focusIndex]){
