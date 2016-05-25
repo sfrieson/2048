@@ -34,13 +34,11 @@ var display = {
 			width: "5px",
 			height: "5px",
 			borderRadius: "50%",
-			// transform: "translate(50px,50px)",
 		},
 		end: {
 			width: "100px",
 			height: "100px",
 			borderRadius: "10px",
-			// transform: "translate(0,0)"
 		}
 	}
 };
@@ -100,7 +98,6 @@ display.updateTile = function(tile) {
 };
 
 display.removeTile = function(tile){
-	console.log(tile);
 	tile.display.remove();
 	tile = null;
 };

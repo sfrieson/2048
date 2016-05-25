@@ -39,7 +39,7 @@ Game.prototype.getEmpties = function() {
 Game.prototype.score = function(scoringTile) {
 	this.currentScore += scoringTile.value;
 	events.emit("score");
-}
+};
 //Add new Tile to random position
 Game.prototype.addTile = function () {
 	//remove a random cell from empties list

@@ -3,7 +3,7 @@
 var square = 4,
 		startingCells = 2,
 		game = new Game(square,startingCells);
-window.game = game;//TODO: remove this variable
+
 game.display = $('#game')
 .css({width: 110 * square, height: 110 * square});
 $('body').append(game.display);
@@ -26,5 +26,3 @@ $(document).on('keydown', function(e){
 	};
   if(directions[e.keyCode]) game.attemptMove(directions[e.keyCode]);
 });
-
-// events.on("after move", game.status, game);
