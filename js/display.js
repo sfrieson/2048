@@ -13,6 +13,21 @@ var colors = {
 	12:	"green",
 	13:	"darkgreen",
 };
+colors = {
+	1: 		"#40FFD3",
+	2: 		"#3BE0E8",
+	3: 		"#4DC8FF",
+  4: 	"#3B85E8",
+  5: 	"#4060FF",
+  6: 	"#433BFF",
+  7: 	"#6E36E8",
+  8: 	"#B348FF",
+	9:	"#CF36E8",
+	10:	"#FF3BD0",
+	11:	"#FF3F73",
+	12:	"#E84539",
+	13:	"#FF6F33",
+};
 
 var display = {
 	new: {

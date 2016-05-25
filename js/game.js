@@ -2,7 +2,6 @@ var Game = function (sq, starters) {
 	if(arguments.length < 2) throw new TypeError("You must supply two arguments: width of game matrix and number of starting tiles.");
 	//length and width of board matrix
 	this.empties = [];
-	this.removed = [];
 	this.currentScore = 0;
 
 	//Game board
@@ -12,7 +11,6 @@ var Game = function (sq, starters) {
 		state[y][x] = cell;
 		this.empties.push(cell);
 	}.bind(this)); //for this.empties
-	this.tiles = [];
 	this.moves = 0;
 
 	//Add starting tiles
@@ -46,10 +44,7 @@ Game.prototype.addTile = function () {
 	var cell = sample.call(this.empties);
 
 	//make a new tile there on the board
-	var tile = new Tile(this.moves, cell);
-
-	cell.tile = tile;
-	this.tiles.push(tile);
+	cell.tile = new Tile(this.moves, cell);
 };
 
 //Handles the players move
@@ -89,8 +84,7 @@ Game.prototype.slideCheck = function(move) {
 		//Check if cell is empty (for future sliding)
 		if (!cell.tile) empties[move.focusIndex]++;
 		else {
-			//record old position for animation
-			cell.tile.prevPos = {y:cell.y, x:cell.x};
+			//Remove 'new' or 'merged' status from last round
 			cell.tile.status = null;
 
 			//Slide cell if there were preceeding focusEmpties
@@ -107,7 +101,7 @@ Game.prototype.slideCheck = function(move) {
 			}
 		}
 	}.bind(this),{increment: - move.dir}); //traverse options
-	//After move is done, add a new Tile if there was a slide
+
 	return slid;
 };
 
@@ -147,16 +141,13 @@ Game.prototype.mergeCheck = function(tile, focus, dir){
 Game.prototype.mergeTiles = function (effected, removed){
 	this.removeTileFromCell(removed);
 	effected.merge(this.moves);
-	this.tiles.splice(this.tiles.indexOf(removed), 1);
 
 	//Add removed to empties list
 	this.empties.push({y: removed.y,x: removed.x});
 };
 
 Game.prototype.removeTileFromCell = function (tile) {
-	// var axis = focus === "x" ? "y" : "x";
 	tile.remove(this.moves);
-	this.removed.push(tile);
 	this.state[tile.y][tile.x].tile = null;
 };
 
