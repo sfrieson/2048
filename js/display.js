@@ -1,4 +1,4 @@
-var colors = {
+var warmColors = {
 	1: 	"beige",
 	2: 	"yellow",
 	3: 	"gold",
@@ -13,7 +13,7 @@ var colors = {
 	12:	"green",
 	13:	"darkgreen",
 };
-colors = {
+var coolColors = {
 	1: 	"#40FFD3",
 	2: 	"#3BE0E8",
 	3: 	"#4DC8FF",
@@ -28,6 +28,23 @@ colors = {
 	12:	"#E84539",
 	13:	"#FF6F33",
 };
+var monochromatic = {
+	1: 	"#eeeeee",
+	2: 	"#dddddd",
+	3: 	"#cccccc",
+  4: 	"#bbbbbb",
+  5: 	"#aaaaaa",
+  6: 	"#888888",
+  7: 	"#777777",
+  8: 	"#666666",
+	9:	"#555555",
+	10:	"#444444",
+	11:	"#333333",
+	12:	"#222222",
+	13:	"#111111",
+};
+
+var colors = coolColors;
 
 var display = {
 	scoreboard: $('<div>').addClass('scoreboard').text('0'),
