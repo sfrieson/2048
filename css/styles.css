@@ -1,7 +1,9 @@
 body {
-  /*margin: 0;*/
+  background-color: #333c46;
   text-align: center;
   font-family: sans-serif;
+  color: #e6edf2;
+  font-size: 20px;
 }
 #game {
   position: relative;
@@ -14,11 +16,12 @@ body {
 }
 h1{
   font-size: 3em;
+  font-family: 'Bungee', sans-serif;
 }
 .scoreboard {
   text-align: center;
   font-size: 2em;
-
+  font-family: 'Bungee', sans-serif;
 }
 .bottom-content {
   padding: 30px 0;
@@ -26,23 +29,19 @@ h1{
 @keyframes grow {
 /*   animation: grow 0.2s linear; */
   0% {
-    /*margin:50px;*/
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    transform: translate(50px,50px);
+    -webkit-clip-path: circle(0px);
+    -moz-clip-path: circle(0px);
+    clip-path: circle(0px);
   }
-  80% {
-    /*margin: 5px;*/
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    transform: translate(0,0)
+  100% {
+    -webkit-clip-path: circle(100px);
+    -moz-clip-path: circle(100px);
+    clip-path: circle(100px);
   }
 }
 
 .new {
-  animation: grow 0.2s linear;
+  animation: grow .4s ease-in-out;
 }
 
 @keyframes jump {
@@ -58,12 +57,13 @@ h1{
 
 .cell {
   box-sizing: border-box;
+  box-shadow: inset 0 2px 3px #20252d;
   width: 100px;
   height: 100px;
   padding: 15px;
   margin: 5px;
-  border: 1px solid gray;
-  border-radius: 10px;
+  border-radius: 4px;
+  background-color: #2c333c;
   display: inline-block;
   overflow: hidden;
   text-align: center;
@@ -81,14 +81,41 @@ h1{
   margin: 5px;
   padding: 15px;
   font-size: 24px;
-  /*border: 1px solid gray;*/
-  border-radius: 10px;
+  font-weight: 700;
+  border-radius: 4px;
   overflow: hidden;
   text-align: center;
   position: absolute;
-  transition: all .15s;
+  transition: left .15s, top .15s;
+  z-index: 2;
 }
 .number {
-  margin: 10px;
-  font: 24px/1.4 sans-serif;
+  width: 100%;
+  text-align: center;
+  font: 36px/1.4 'Bungee', sans-serif;
+  top: calc(100% - 50px - .7em);
+  left: 0;
+  position: absolute;
+  color: black;
+}
+.overlay {
+  z-index: 1;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vw;
+  background-color: rgba(0,0,0,.1);
+  display: block;
+  content: " ";
+  pointer-events: none;
+  -webkit-backdrop-filter: blur(10px);
+}
+
+a,
+a:visited {
+  color: #f4f3e1;
+}
+a:active {
+  color: #e8dca9;
 }

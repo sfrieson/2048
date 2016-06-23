@@ -7,6 +7,7 @@ var square = 4,
 
 //Event listening
 $(document).on('keydown', function(e){
+
 	var directions = {
 		37: "left",
 		38: "up",
@@ -17,7 +18,10 @@ $(document).on('keydown', function(e){
 		68: "right",
 		83: "down"
 	};
-  if(directions[e.keyCode]) game.attemptMove(directions[e.keyCode]);
+  if(directions[e.keyCode]) {
+		e.preventDefault();
+		game.attemptMove(directions[e.keyCode]);
+	}
 });
 
 })();

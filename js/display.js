@@ -145,8 +145,13 @@ display.updateTile = function(tile) {
 	.html($number);
 };
 
-display.removeTile = function(tile){
-	tile.display.remove();
+display.removeTile = function(tile, merged){
+	var basicCss = {
+		top: merged.y * 110 + merged.y * 4,
+		left: merged.x * 110,
+		zIndex: 1
+	};
+	tile.display.css(basicCss).fadeOut(150,tile.display.remove.bind(tile.display));
 	tile = null;
 };
 
@@ -157,4 +162,4 @@ events.on("merge", display.updateTile, display);
 events.on("remove", display.removeTile, display);
 events.on("new tile", display.updateTile, display);
 events.on("score", display.addToMoveScore, display);
-events.on("after move", display.showMoveScore, display);
+events.on("after move", display.sowMoveScore, display);

@@ -1,7 +1,7 @@
 var Game = function (sq, starters) {
 	if(arguments.length < 2) throw new TypeError("You must supply two arguments: width of game matrix and number of starting tiles.");
 	//length and width of board matrix
-	this.empties = [];
+	this.empties = []
 	this.currentScore = 0;
 	this.moveScore = 0;
 	//Game board
@@ -17,8 +17,6 @@ var Game = function (sq, starters) {
 
 	//Add starting tiles
 	while(starters--) this.addTile();
-
-
 
 	events.on("after slides", this.getEmpties, this);
 	events.on("empties found", this.addTile, this);
@@ -145,15 +143,15 @@ Game.prototype.mergeCheck = function(tile, focus, dir){
 };
 
 Game.prototype.mergeTiles = function (effected, removed){
-	this.removeTileFromCell(removed);
+	this.removeTileFromCell(removed, effected);
 	effected.merge(this.moves);
 
 	//Add removed to empties list
 	this.empties.push({y: removed.y,x: removed.x});
 };
 
-Game.prototype.removeTileFromCell = function (tile) {
-	tile.remove(this.moves);
+Game.prototype.removeTileFromCell = function (tile, merged) {
+	tile.remove(this.moves, merged);
 	this.state[tile.y][tile.x].tile = null;
 };
 
@@ -194,12 +192,11 @@ Tile.prototype.merge = function(moves) {
 	events.emit("merge", [this]);
 };
 
-Tile.prototype.remove = function(moves, direction) {
+Tile.prototype.remove = function(moves, merged) {
 	this.status = "removed";
 	this.value = -1;
 	this.updated = moves;
-	// this.direction = direction;
-	events.emit("remove", [this]);
+	events.emit("remove", [this, merged]);
 };
 
 
