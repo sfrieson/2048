@@ -162,4 +162,4 @@ events.on("merge", display.updateTile, display);
 events.on("remove", display.removeTile, display);
 events.on("new tile", display.updateTile, display);
 events.on("score", display.addToMoveScore, display);
-events.on("after move", display.sowMoveScore, display);
+events.on("after move", display.showMoveScore, display);
